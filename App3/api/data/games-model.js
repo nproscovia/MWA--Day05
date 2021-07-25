@@ -4,17 +4,16 @@ const mongoose = require("mongoose");
 const reviewSchema=new mongoose.Schema({
     name:{
       type: String,
-
+      required: true
     },
   
     review:{
       type: String,
-     // required: true
+     
     },
     date: {
-       type: Date, 
+       type: String, 
       
-       default: Date.now 
       },
   });
   
@@ -55,8 +54,8 @@ const gamesSchema = new mongoose.Schema({
     },
     designer:[String],
 
-    publisher: [publisherSchema],
-    review: [reviewSchema]
+    publisher: publisherSchema,
+    reviews: [reviewSchema]
 });
 
 

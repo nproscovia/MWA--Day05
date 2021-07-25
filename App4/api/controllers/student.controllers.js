@@ -87,6 +87,42 @@ module.exports.deleteOneStudent = function (req, res) {
         });
 };
 
+    
+    module.exports.studentsFullUpdateOne = function (req, res) {
+        const studentId = req.params.studentId;
+        Student.findById(studentId).exec(function (err, student) {
+            const response = {
+                status: 204,
+                message: student
+            }
+            
+            if (err) {
+                res.status = 500;
+                response.message = err;
+            } else if (!student) {
+                response.status = 404;
+                response.message = "the student does not exist"
+            if (response.status !== 204) {
+                res.status(response.status).json(response.message);}
+            } else {
+                student.name = req.body.name;
+                student.gpa = parseFloat(req.body.gpa);
+                student.save(function (err, updatedStudent) {
+                    if (err) {
+                        response.status = 500;
+                        response.message = err;
+                    } else {
+                        return res.status(response.status).json({ message: updatedStudent });
+                    }
+    
+                });
+            }
+    
+        });
+    }
+    
+
+
 
 
     

@@ -18,7 +18,6 @@ module.exports.publishersGetAll = function (req, res) {
       response.message = err;
     } else if (!game) {
       response.status = 404;
-      response.message = { "message": "Game Id not found " + gameId };
     } else {
       response.message = game.publisher;
     }
@@ -63,7 +62,7 @@ module.exports.publishersAddOne = function (req, res) {
     } else if (!game) {
    
       response.status = 404;;
-      response.message = { "message": "Game id not found: " + gameId };
+      response.message = "Game id not found"
     }
 
     if (game) {
@@ -79,8 +78,7 @@ module.exports.publishersAddOne = function (req, res) {
 module.exports.publisherFullUpdate = function (req, res) {
  
   const gameId = req.params.gameId;
- 
-  console.log("PUT gameId", gameId);
+
   Game.findById(gameId).select("publisher").exec(function (err, game) {
     const response = {
       status: 204,
@@ -94,7 +92,7 @@ module.exports.publisherFullUpdate = function (req, res) {
     } else if (!game) {
      
       response.status = 404;
-      response.message = { "message": "Game ID not found" };
+      response.message = "Game id not found"
     }
     if (response.status !== 204) {
       res.status(response.status).json(response.message);
@@ -144,7 +142,7 @@ module.exports.publisherDeleteOne=function(req, res){
     } else if (!game) {
      
       response.status = 404;
-      response.message = { "message": "Game ID not found" };
+      response.message = "Game id not found"
     }
       
 

@@ -23,7 +23,7 @@ if (isNaN(offset) || isNaN(count)) {
 
 Game.find().skip(offset).limit(count).exec(function (err, games) {
     const response = {
-        status: 200,
+        status: 201,
         message: games
     };
     if(err) {
@@ -48,19 +48,16 @@ module.exports.getOneGame = function (req, res) {
 
 
 module.exports.addOneGame = function (req, res) {
-    console.log("POST new game");
-    console.log(req.body);
-
-
+    
     const newGame = {
         title: req.body.title,
-        price: parseFloat(req.body.price),
         year: parseInt(req.body.year),
+        rate: parseInt(req.body.rate),
+        price: parseFloat(req.body.price),
         minPlayers: parseInt(req.body.minPlayers),
         maxPlayers: parseInt(req.body.maxPlayers),
         minAge: parseInt(req.body.minAge),
-        rate: parseInt(req.body.rate),
-        designers: [req.body.designers]
+        designers: req.body.designers
         
     };
 
@@ -83,13 +80,12 @@ module.exports.addOneGame = function (req, res) {
 
 module.exports.gamesFullUpdateOne = function (req, res) {
     console.log("gamesFullUpdateOne requiest recieved")
-    const gameID = req.params.gameID;
+    const gameId = req.params.gameId;
     
 
-    Game.findById(gameID).exec(function (err, game) {
+    Game.findById(gameId).select("-reviews -publisher").exec(function (err, game) {
         const response = {
             status: 204,
-            message: game
         };
 
         if (err) {
@@ -98,32 +94,33 @@ module.exports.gamesFullUpdateOne = function (req, res) {
             response.message = err;
         } else if (!game) {
             response.status = 404;
-            response.message = { "message": "Game ID not found" };
+            response.message = { statusMessage: "game not found" };
         }
 
         if (response.status !== 204) {
             res.status(response.status).json(response.message);
         } else {
             
-            game.title = req.body.title;
-            game.price = parseFloat(req.body.price);
-            game.year = parseInt(req.body.year);
-            game.minPlayers = parseInt(req.body.minPlayers);
-            game.maxPlayers = parseInt(req.body.maxPlayers);
-            game.minAge = parseInt(req.body.minAge);
-            game.rate = parseInt(req.body.rate);
-            game.designers = [req.body.designers];
+           game. title= req.body.title;
+        game.year= parseInt(req.body.year);
+        game.rate= parseInt(req.body.rate);
+        game.price= parseFloat(req.body.price);
+        game.minPlayers= parseInt(req.body.minPlayers);
+        game.maxPlayers= parseInt(req.body.maxPlayers);
+        game.minAge= parseInt(req.body.minAge);
+        game.designers= req.body.designers;
 
             
 
             game.save(function (err, updatedGame) {
+                const response={
+                    status:204,
+                    message:updatedGame
+                }
                 if (err) {
                     response.status = 500;
                     response.message = err;
-                } else {
-                   
-                    response.message = updatedGame;
-                }
+                } 
                 res.status(response.status).json(response.message);
             })
 
@@ -136,13 +133,13 @@ module.exports.gamesFullUpdateOne = function (req, res) {
 
 module.exports.gamesPartialUpdateOne = function (req, res) {
     console.log("gamesFullUpdateOne requiest recieved")
-    const gameID = req.params.gameID;
+    const gameId = req.params.gameId;
     
 
-    Game.findById(gameID).exec(function (err, game) {
+    Game.findById(gameId).select("-reviews -publisher").exec(function (err, game) {
         const response = {
             status: 204,
-            message: game
+          
         };
 
         if (err) {
@@ -151,11 +148,12 @@ module.exports.gamesPartialUpdateOne = function (req, res) {
             response.message = err;
         } else if (!game) {
             response.status = 400;
-            response.message = { "message": "Game ID not found" };
+            response.message = { statusMessage: "Game ID not found" };
         }
 
         if (response.status !== 204) {
             res.status(response.status).json(response.message);
+            return;
         } else {
            
             if (req.body.title) {
@@ -192,19 +190,17 @@ module.exports.gamesPartialUpdateOne = function (req, res) {
 
 
             game.save(function (err, updatedGame) {
+
                 if (err) {
                     response.status = 500;
                     response.message = err;
-                } else {
-                    response.message = updatedGame;
-                }
+                } 
                 res.status(response.status).json(response.message);
             })
 
 
         }
 
-       
     });
 };
 
@@ -226,7 +222,7 @@ module.exports.deleteOneGame = function (req, res) {
       } else if (!deletedGame) {
        
         response.status = 404;
-        response.message = { "message": "Game ID not found" };
+        response.message =  "Game ID not found" ;
       }
       res.status(response.status).json({message: "Delete successful"});
     });

@@ -2,12 +2,11 @@ const mongoose = require("mongoose");
 const Game = mongoose.model("Game");
 require("./publisher.controllers");
 
-//const
 
 module.exports.getallgames = function(req,res){
 
     console.log("getall games");
-let count =5;
+let count =28;
 let offset = 0;
 
 if(require.query && require.query.count){
@@ -24,8 +23,6 @@ if (isNaN(offset) || isNaN(count)) {
     return;
 }
 
-
-// hardening getall by returning err or check error
 Game.find().skip(offset).limit(count).exec(function (err, games) {
     const response = {
         status: 200,
@@ -33,11 +30,9 @@ Game.find().skip(offset).limit(count).exec(function (err, games) {
     };
     if(err) {
         console.log("Error finding games", err);
-        //res.status(500).json(err)
         response.status = 500;
         response.message = err;
     }    
-    //res.status(500).json(games)
     res.status(response.status).json(response.message);
 });
 };
@@ -46,7 +41,7 @@ Game.find().skip(offset).limit(count).exec(function (err, games) {
 module.exports.getOneGame = function (req, res) {
     const gameId = req.params.gameId;
     Game.findById(gameId).exec(function (err, game) {
-      console.log("GET game  with gameid", gameId);
+      console.log("game  with gameid", gameId);
       res.status(200).json(game);
     });
   };
@@ -54,7 +49,6 @@ module.exports.getOneGame = function (req, res) {
 module.exports.addOneGame = function (req, res) {
     console.log(req.body);
 
-    //fill in this by looking at the game model. so that they march. 
     const newGame = {
         title: req.body.title,
         price: parseFloat(req.body.price),
@@ -64,12 +58,9 @@ module.exports.addOneGame = function (req, res) {
         minAge: parseInt(req.body.minAge),
         rate: parseInt(req.body.rate),
         designers: [req.body.designers]
-        //designers:[]. this is an empty array.
-        //designers: req.body.designers,
-        //publisher: {}
+        
     };
 
-    //call back function. status and message are , need :
     Game.create(newGame, function(err, game) {
         const response = {
             status: 201,
@@ -85,8 +76,6 @@ module.exports.addOneGame = function (req, res) {
     });
 }
 
-
-
 module.exports.gamesFullUpdateOne = function (req, res) {
    
     const gameID = req.params.gameID;
@@ -94,17 +83,16 @@ module.exports.gamesFullUpdateOne = function (req, res) {
 
     Game.findById(gameID).exec(function (err, game) {
         const response = {
-            status: 204,// cos u are updating a game
+            status: 204,
             message: game
         };
 
         if (err) {
-            console.log("Error finding game");
             response.status = 500;
             response.message = err;
         } else if (!game) {
             response.status = 404;
-            response.message = { "message": "Game ID not found" };
+            response.message =  "Game ID not found" ;
         }
 
         if (response.status !== 204) {
@@ -120,33 +108,28 @@ module.exports.gamesFullUpdateOne = function (req, res) {
             game.rate = parseInt(req.body.rate);
             game.designers = [req.body.designers];
 
-            //designers: req.body.designers,
-            //game.publisher = {};
 
             game.save(function (err, updatedGame) {
                 if (err) {
-                    response.status = 500;//500
+                    response.status = 500;
                     response.message = err;
                 } else {
-                    //if have no error
+                    
                     response.message = updatedGame;
                 }
                 res.status(response.status).json(response.message);
             })
 
-
         }
-
-        //res.status(response.status).json(response.message);
+        
     });
 };
 
 
 module.exports.gamesPartialUpdateOne = function (req, res) {
-    console.log("gamesFullUpdateOne requiest recieved")
-    const gameID = req.params.gameID;
+    const gameId = req.params.gameId;
     
-    Game.findById(gameID).exec(function (err, game) {
+    Game.findById(gameId).exec(function (err, game) {
         const response = {
             status: 204,
             message: game
@@ -158,22 +141,21 @@ module.exports.gamesPartialUpdateOne = function (req, res) {
             response.message = err;
         } else if (!game) {
             response.status = 400;
-            response.message = { "message": "Game ID not found" };
+            response.message = "game ID not found" ;
         }
 
         if (response.status !== 204) {
             res.status(response.status).json(response.message);
         } else {
           
-            //if use has title, use it
             if (req.body.title) {
                 game.title = req.body.title;
             }
-             //if req has price, use it
+ 
             if (req.body.price) {
                 game.price = parseFloat(req.body.price);
             }
-              //if req has year, use it.
+             
             if (req.body.year) {
                 game.year = parseInt(req.body.year);
             }

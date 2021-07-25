@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 const publisherSchema = new mongoose.Schema({
     name: {
         type: String,
+        require:true
     },
 
     country: String 
@@ -38,8 +39,12 @@ const gamesSchema = new mongoose.Schema({
     },
     designer:[String],
 
-    publisher: [publisherSchema]
+    publisher:{
+        type: publisherSchema,
+        default:{}
+    }
 });
 
 
 mongoose.model("Game", gamesSchema, "games");
+mongoose.model("Publisher", publisherSchema,"publisher");

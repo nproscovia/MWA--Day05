@@ -27,7 +27,7 @@ const gamesSchema = new mongoose.Schema({
         type: Number,
         min: 4
     },
-    designer:[String]
+    designer:String
 });
 
 

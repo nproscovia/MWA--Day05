@@ -8,7 +8,7 @@ module.exports.getOnePublisher = function(req, res) {
         Game.findById(gameId).select("publisher").exec(function(err, publisher) {
 
             const response= {
-                status:201,
+                status:200,
                 message:publisher,
             }
             if(err) {
@@ -72,13 +72,13 @@ module.exports.addOnePublisher = function (req, res) {
 
 };
 
-const _updatePublisher = function (req, res, games) {
+const _updatePublisher = function (req, res, game) {
   game.publisher.name = req.body.name;
   game.publisher.country = req.body.country;
   game.save(function (err, updatedGame) {
     const response = {
       status: 200,
-      message: games
+     
     };
     if (err) {
       response.status = 500;
@@ -124,6 +124,56 @@ module.exports.publisherFullUpdate = function (req, res) {
   });
 };
 
+//PATCH
+module.exports.publisherPartialUpdate = function(req, res) {
+  
+  const gameId = req.params.gameId;
+  Game.findById(gameId).select("publisher").exec(function(err, publisher) {
+      const response = {
+          status: 204
+      };
+
+      if (err) {
+          response.status = 500;
+          response.message = err;
+
+      } else if (!publisher) {
+          response.status = 404;
+          response.message = { statusMessage: "game not found!" };
+      }
+      if (response.status !== 204) {
+          res.status(response.status).json(response.message);
+          return;
+      }
+
+      _partialUpdateIngredients(publisher, req, res);
+  });
+};
+
+const _partialUpdateIngredients = function(publisher, req, res) {
+
+  if (req.body.name) 
+      { dish.ingredients.name = req.body.name; }
+
+  if (req.body.price) 
+      { dish.ingredients.price = req.body.price; }
+      if (req.body.location) 
+      { dish.ingredients.location = req.body.location; }
+
+  
+  dish.save(function(err, updatedDish) {
+      const response = {
+          status: 204,
+          message: updatedDish.ingredients
+      };
+
+      if (err) {
+          response.status = 500;
+          response.message = err;
+      }
+      res.status(response.status).json(response.message)
+  });
+};
 
 module.exports.deleteOnePublisher=function(req, res){
  
@@ -149,8 +199,7 @@ module.exports.deleteOnePublisher=function(req, res){
         res.status(response.status).json(response.message);
 
       } else {
-        console.log("Game found");
-        _deletePublisher(req, res, games);
+        _deletePublisher(req, res, game);
 
       }
     

@@ -5,8 +5,20 @@ const reviewController = require("../controllers/review.controllers");
 
 console.log("here")
 const router = express.Router();
+//GAME ROUTES
+
+router.route("/games")
+     .get(gamesController.getallgames )
+     .post(gamesController.addOneGame);
+
+     router.route("/games/:gameId")
+           .get(gamesController.getOneGame)
+           .put(gamesController.gamesFullUpdateOne)
+           .patch(gamesController.gamesPartialUpdateOne)
+           .delete(gamesController.deleteOneGame);
 
 
+  //REVIEW ROUTES
      router.route("/games/:gameId/reviews")
       .get(reviewController.getAllReviews)
       .post(reviewController.addOneReview)
